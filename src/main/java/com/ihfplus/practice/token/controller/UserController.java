@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
-
     @Autowired
     private TokenService tokenService;
 
@@ -38,9 +37,7 @@ public class UserController {
     @PostMapping("/say")
     public JSONObject sayHi() {
         JSONObject resp = new JSONObject();
-
-
-
+        resp.put("body", "hi");
         return resp;
     }
 

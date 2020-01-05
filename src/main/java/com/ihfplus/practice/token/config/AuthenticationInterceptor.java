@@ -1,9 +1,12 @@
-package com.ihfplus.practice.token;
+package com.ihfplus.practice.token.config;
 
 import com.ihfplus.practice.token.annotation.ExcludeMethod;
+import com.ihfplus.practice.token.dto.resp.CommonResponse;
+import com.ihfplus.practice.token.dto.resp.ErrorCode;
 import com.ihfplus.practice.token.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -26,13 +29,13 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        if(!(handler instanceof HandlerMethod)){
+        if (!(handler instanceof HandlerMethod)) {
             return true;
         }
         //判断请求是否需要拦截，不需要，直接放行；
 
         //需要，拦截
-        HandlerMethod handlerMethod=(HandlerMethod)handler;
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
         boolean ckExclution = handlerMethod.getMethod().isAnnotationPresent(ExcludeMethod.class);
         if (ckExclution) {
             return true;
@@ -42,11 +45,11 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         if (token == null) {
             return false;
         }
-        boolean result = tokenService.verifyToken(token);
-        if (!result) {
-            return false;
+        CommonResponse commonResponse = tokenService.verifyToken(token);
+        if (commonResponse != null && StringUtils.pathEquals(commonResponse.getCode(), ErrorCode.SUCCESS.getCode())) {
+            return true;
         }
-        return true;
+        return false;
     }
 
 }
